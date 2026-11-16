@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#071b18">
+  <meta name="description" content="Installeerbare Adhan-klok met gebedstijden voor telefoon en tv.">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Adhan Scherm">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="assets/icons/icon-192.png">
+  <link rel="apple-touch-icon" href="assets/icons/icon-192.png">
+  <link rel="stylesheet" href="styles.css">
+  <title>Adhan Scherm</title>
+</head>
+<body>
+  <div class="ambient ambient-one"></div>
+  <div class="ambient ambient-two"></div>
+
+  <main class="shell" aria-live="polite">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">☾</div>
+        <div>
+          <h1>Adhan Scherm</h1>
+          <p id="location-label">Kampen, Nederland</p>
+        </div>
+      </div>
+      <div class="actions">
+        <button id="install-button" class="button subtle" hidden>＋ Installeren</button>
+        <button id="fullscreen-button" class="icon-button" aria-label="Volledig scherm" title="Volledig scherm">⛶</button>
+        <button id="settings-button" class="icon-button" aria-label="Instellingen" title="Instellingen">⚙</button>
+      </div>
+    </header>
+
+    <section class="hero">
+      <p id="gregorian-date" class="eyebrow">Datum laden…</p>
+      <time id="clock" class="clock" datetime="">--:--</time>
+      <p id="hijri-date" class="hijri">Islamitische datum laden…</p>
+
+      <article class="next-prayer-card">
+        <div>
+          <p class="label">Volgend gebed</p>
+          <h2 id="next-prayer-name">Gebedstijden laden…</h2>
+        </div>
+        <div class="next-time">
+          <strong id="next-prayer-time">--:--</strong>
+          <span id="countdown">--:--:--</span>
+        </div>
+      </article>
+    </section>
+
+    <section aria-labelledby="schedule-title" class="schedule-section">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">Vandaag</p>
+          <h2 id="schedule-title">Gebedstijden</h2>
+        </div>
+        <button id="refresh-button" class="button subtle">↻ Vernieuwen</button>
+      </div>
+      <div id="prayer-grid" class="prayer-grid" aria-busy="true"></div>
+      <p id="status-message" class="status" role="status">Gebedstijden worden opgehaald…</p>
+    </section>
+
+    <footer>
+      <span id="online-status">● Online</span>
+      <span>Laat deze app open voor Adhan op het juiste tijdstip.</span>
+    </footer>
+  </main>
+
+  <dialog id="settings-dialog">
+    <form id="settings-form" method="dialog">
+      <div class="dialog-heading">
+        <div>
+          <p class="eyebrow">Persoonlijk instellen</p>
+          <h2>Instellingen</h2>
+        </div>
+        <button type="button" id="close-settings" class="icon-button" aria-label="Sluiten">×</button>
+      </div>
+
+      <div class="form-grid">
+        <label class="wide">Plaatsnaam
+          <input id="place-input" name="place" autocomplete="address-level2" placeholder="Bijv. Kampen">
+        </label>
+        <label>Breedtegraad
+          <input id="latitude-input" name="latitude" type="number" min="-90" max="90" step="any" required>
+        </label>
+        <label>Lengtegraad
+          <input id="longitude-input" name="longitude" type="number" min="-180" max="180" step="any" required>
+        </label>
+        <button type="button" id="gps-button" class="button secondary wide">⌖ Gebruik mijn huidige locatie</button>
+
+        <label class="wide">Berekeningsmethode
+          <select id="method-input" name="method">
+            <option value="3">Muslim World League</option>
+            <option value="13">Diyanet (Turkije)</option>
+            <option value="12">Union des Organisations Islamiques de France</option>
+            <option value="4">Umm al-Qura, Makkah</option>
+            <option value="2">Islamic Society of North America</option>
+            <option value="1">University of Islamic Sciences, Karachi</option>
+          </select>
+        </label>
+        <label class="wide">Asr-methode
+          <select id="school-input" name="school">
+            <option value="0">Standaard (Shafi, Maliki, Hanbali)</option>
+            <option value="1">Hanafi</option>
+          </select>
+        </label>
+
+        <label class="switch-row wide">
+          <span><strong>Adhan afspelen</strong><small>Werkt betrouwbaar wanneer de app open blijft.</small></span>
+          <input id="audio-enabled-input" type="checkbox" role="switch" checked>
+        </label>
+        <label class="wide">Volume
+          <input id="volume-input" type="range" min="0" max="1" step="0.05" value="0.9">
+        </label>
+
+        <div class="audio-tools wide">
+          <button type="button" id="test-audio-button" class="button secondary">▶ Test Adhan</button>
+          <label class="button secondary file-button">Eigen audio kiezen
+            <input id="audio-file-input" type="file" accept="audio/*">
+          </label>
+          <button type="button" id="reset-audio-button" class="text-button">Standaard herstellen</button>
+        </div>
+        <p id="audio-label" class="help wide">Standaard Adhan (CC BY-SA 4.0)</p>
+
+        <button type="button" id="notification-button" class="button secondary wide">Meldingen inschakelen</button>
+        <label class="switch-row wide">
+          <span><strong>Scherm wakker houden</strong><small>Handig voor tv of een vaste display.</small></span>
+          <input id="wake-lock-input" type="checkbox" role="switch" checked>
+        </label>
+      </div>
+
+      <div class="dialog-actions">
+        <button type="button" id="cancel-settings" class="button subtle">Annuleren</button>
+        <button type="submit" class="button primary">Opslaan</button>
+      </div>
+    </form>
+  </dialog>
+
+  <section id="adhan-overlay" class="adhan-overlay" hidden aria-live="assertive">
+    <div class="adhan-content">
+      <div class="pulse-ring"><span>☾</span></div>
+      <p class="eyebrow">Het is tijd voor</p>
+      <h2 id="adhan-prayer-name">Gebed</h2>
+      <p id="adhan-prayer-time">--:--</p>
+      <button id="stop-adhan-button" class="button light">■ Stop Adhan</button>
+    </div>
+  </section>
+
+  <noscript>JavaScript is nodig om de gebedstijden te tonen.</noscript>
+  <script src="app.js" defer></script>
+</body>
+</html>
